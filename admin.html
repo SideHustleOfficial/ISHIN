@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Admin</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="denied" class="center" hidden>
+    <div class="card"><h2>Not an admin</h2><a href="chat.html">Back to chat</a></div>
+  </div>
+  <div id="app" class="admin" hidden>
+    <header>
+      <h2>Admin</h2>
+      <button id="exportAll">Download full archive (JSON)</button>
+      <a href="chat.html">Go to chat</a>
+    </header>
+    <section>
+      <h3>Users</h3>
+      <table id="usersTable"><thead><tr><th>Username</th><th>Password</th><th>UID</th></tr></thead><tbody></tbody></table>
+    </section>
+    <section>
+      <h3>All chats (permanent archive)</h3>
+      <div id="chatList"></div>
+    </section>
+    <section id="chatView" hidden>
+      <h3 id="viewTitle"></h3>
+      <div>
+        <button id="exportChat">Download this chat (JSON)</button>
+        <button id="deleteLive">Delete live messages</button>
+      </div>
+      <div id="viewMessages" class="messages"></div>
+    </section>
+  </div>
+  <script type="module" src="admin.js"></script>
+</body>
+</html>

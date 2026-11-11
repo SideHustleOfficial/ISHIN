@@ -1,0 +1,75 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function signedIn() {
+      return request.auth != null;
+    }
+    function isAdmin() {
+      return signedIn() && exists(/databases/$(database)/documents/admins/$(request.auth.uid));
+    }
+    function isMember(chatId) {
+      return signedIn() &&
+        request.auth.uid in get(/databases/$(database)/documents/chats/$(chatId)).data.members;
+    }
+
+    // Admins are added by hand in the console. An admin can read only their own doc.
+    match /admins/{uid} {
+      allow get: if signedIn() && request.auth.uid == uid;
+      allow write: if false;
+    }
+
+    // Only usernames listed here can sign up. Add docs by hand (doc ID = username).
+    match /allowed/{name} {
+      allow read, write: if false;
+    }
+
+    // Public lookup of username -> uid (needed for sign-up checks and friend search).
+    match /usernames/{name} {
+      allow get: if true;
+      allow create: if signedIn()
+        && request.resource.data.uid == request.auth.uid
+        && exists(/databases/$(database)/documents/allowed/$(name));
+      allow update, delete, list: if false;
+    }
+
+    // Plain-text passwords live here. Only the owner and the admin can read.
+    match /users/{uid} {
+      allow get: if signedIn() && (request.auth.uid == uid || isAdmin());
+      allow list: if isAdmin();
+      allow create: if signedIn() && request.auth.uid == uid;
+      allow update, delete: if false;
+
+      match /friends/{friendUid} {
+        allow read, write: if signedIn() && request.auth.uid == uid;
+      }
+    }
+
+    match /chats/{chatId} {
+      allow get, list: if signedIn();
+      allow create: if signedIn()
+        && request.auth.uid in request.resource.data.members
+        && request.resource.data.members.size() == 2;
+      allow update, delete: if false;
+
+      match /messages/{msgId} {
+        allow read: if isMember(chatId) || isAdmin();
+        allow create: if signedIn()
+          && request.resource.data.senderUid == request.auth.uid
+          && request.resource.data.type in ['text', 'image', 'emoji']
+          && isMember(chatId);
+        allow update: if false;
+        allow delete: if isAdmin();
+      }
+    }
+
+    // Permanent copy for admin. Users can add, never edit or delete.
+    match /archive/{id} {
+      allow read: if isAdmin();
+      allow create: if signedIn()
+        && request.resource.data.senderUid == request.auth.uid
+        && request.auth.uid in request.resource.data.chatId.split('_');
+      allow update, delete: if false;
+    }
+  }
+}
