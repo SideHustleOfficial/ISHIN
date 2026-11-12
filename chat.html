@@ -7,27 +7,36 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div class="app">
+  <div id="app" class="app">
     <aside class="side">
-      <div class="me">
-        <strong id="myName">…</strong>
-        <button id="logout" class="small">Log out</button>
+      <div class="side-top">
+        <div class="me">
+          <div id="myAvatar" class="avatar"></div>
+          <strong id="myName">…</strong>
+        </div>
+        <button id="logout" class="ghost">Log out</button>
       </div>
       <div class="search">
-        <input id="searchInput" placeholder="Exact username">
-        <button id="searchBtn" class="small">Add</button>
+        <input id="chatSearch" placeholder="Search or add username" autocomplete="off">
+        <button id="addFriendBtn" title="Add friend">＋</button>
       </div>
-      <ul id="friendsList" class="friends"></ul>
+      <ul id="chatList" class="chat-list"></ul>
     </aside>
-    <main class="chat">
-      <header id="chatTitle">Pick or add a friend</header>
+
+    <main class="main">
+      <header class="chat-head">
+        <button id="backBtn" class="ghost back">←</button>
+        <div id="chatAvatar" class="avatar"></div>
+        <strong id="chatName"></strong>
+      </header>
+      <div id="empty" class="empty">Search a username and click ＋ to start chatting</div>
       <div id="messages" class="messages"></div>
       <div id="emojiPanel" class="emoji-panel" hidden></div>
       <form id="msgForm" class="composer">
-        <button type="button" id="emojiBtn" class="icon">😊</button>
-        <label class="icon">🖼️<input id="imageInput" type="file" accept="image/*" hidden></label>
-        <input id="textInput" placeholder="Message" autocomplete="off">
-        <button type="submit">Send</button>
+        <button type="button" id="emojiBtn" class="ghost">😊</button>
+        <label class="ghost">🖼️<input id="imageInput" type="file" accept="image/*" hidden></label>
+        <input id="textInput" placeholder="Message…" autocomplete="off">
+        <button type="submit" class="send">Send</button>
       </form>
     </main>
   </div>
